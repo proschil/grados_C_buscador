@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grados C - Estándares de Competencia Profesional Canarias 2025</title>
+    <style>
+        :root {
+            --color-verde: #2E8B57;
+            --color-azul: #4682B4;
+            --color-naranja: #FF8C42;
+            --color-rojo: #DC143C;
+            --color-borde: #e0e0e0;
+            --color-fondo: #f5f5f5;
+            --color-header: #f0f0f0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #fff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+        }
+        
+        .selector-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--color-fondo);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .filtros-grupo {
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: 20px;
+            align-items: end;
+        }
+        
+        .selector-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .selector-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: white;
+        }
+        
+        .nivel-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .nivel-btn {
+            padding: 10px 20px;
+            border: 2px solid #ccc;
+            border-radius: 20px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nivel-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .nivel-btn.active {
+            color: white;
+        }
+        
+        .nivel-btn.nivel-1 {
+            border-color: var(--color-verde);
+            color: var(--color-verde);
+        }
+        
+        .nivel-btn.nivel-1.active {
+            background-color: var(--color-verde);
+        }
+        
+        .nivel-btn.nivel-2 {
+            border-color: var(--color-rojo);
+            color: var(--color-rojo);
+        }
+        
+        .nivel-btn.nivel-2.active {
+            background-color: var(--color-rojo);
+        }
+        
+        .nivel-btn.nivel-3 {
+            border-color: var(--color-azul);
+            color: var(--color-azul);
+        }
+        
+        .nivel-btn.nivel-3.active {
+            background-color: var(--color-azul);
+        }
+        
+        .resultados {
+            margin-top: 20px;
+        }
+        
+        .grado-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .grado-header {
+            padding: 20px;
+            background-color: var(--color-header);
+            border-left: 5px solid var(--color-naranja);
+        }
+        
+        .grado-codigo {
+            font-weight: bold;
+            color: var(--color-naranja);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .grado-nombre {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .grado-familia {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .ecp-lista {
+            padding: 0;
+        }
+        
+        .ecp-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--color-borde);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .ecp-item:last-child {
+            border-bottom: none;
+        }
+        
+        .ecp-codigo {
+            background-color: var(--color-fondo);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #555;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .ecp-denominacion {
+            flex: 1;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .contador-resultados {
+            margin-bottom: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        h5 {
+            color: #666;
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .filtros-grupo {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .nivel-selector {
+                justify-content: center;
+            }
+            
+            .ecp-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .ecp-codigo {
+                min-width: auto;
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Grados C - Estándares de Competencia Profesional Canarias 2025</h1>
+        
+        <div class="selector-container">
+            <div class="filtros-grupo">
+                <div>
+                    <label for="familia-select" class="selector-label">Seleccione una familia profesional:</label>
+                    <select id="familia-select" class="selector-field">
+                        <option value="">-- Seleccione una familia profesional --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="selector-label">Seleccione el nivel:</label>
+                    <div class="nivel-selector">
+                        <button class="nivel-btn nivel-1" data-nivel="1">Nivel 1</button>
+                        <button class="nivel-btn nivel-2" data-nivel="2">Nivel 2</button>
+                        <button class="nivel-btn nivel-3" data-nivel="3">Nivel 3</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="resultados">
+            <div class="contador-resultados" id="contador" style="display: none;"></div>
+            <div id="resultados-container">
+                <div class="no-data">Seleccione una familia profesional y un nivel para ver los grados C y sus estándares de competencia</div>
+            </div>
+        </div>
+        
+        <h5>Febrero 2025</h5>
+    </div>
+
+    <script>
+        // Datos de ejemplo - Reemplazar con carga del CSV real
+        let datos = [
+            {
+                "FAM_PROF": "Administración y Gestión",
+                "COD_C": "ADG_C_002_4B",
+                "DEN_C": "Actividades de apoyo administrativo en el ámbito contable, financiero y fiscal",
+                "NIVEL": "2",
+                "COD_ECP": "ECP_001",
+                "DEN_ECP": "Realizar operaciones básicas de contabilidad financiera"
+            },
+            {
+                "FAM_PROF": "Administración y Gestión",
+                "COD_C": "ADG_C_002_4B",
+                "DEN_C": "Actividades de apoyo administrativo en el ámbito contable, financiero y fiscal",
+                "NIVEL": "2",
+                "COD_ECP": "ECP_002",
+                "DEN_ECP": "Gestionar documentación administrativa y fiscal básica"
+            },
+            {
+                "FAM_PROF": "Administración y Gestión",
+                "COD_C": "ADG_C_003_4B",
+                "DEN_C": "Gestión administrativa de recursos humanos",
+                "NIVEL": "2",
+                "COD_ECP": "ECP_003",
+                "DEN_ECP": "Realizar trámites administrativos de personal"
+            },
+            {
+                "FAM_PROF": "Informática y Comunicaciones",
+                "COD_C": "IFC_C_001_4B",
+                "DEN_C": "Desarrollo de aplicaciones web básicas",
+                "NIVEL": "1",
+                "COD_ECP": "ECP_004",
+                "DEN_ECP": "Crear páginas web estáticas con HTML y CSS"
+            },
+            {
+                "FAM_PROF": "Informática y Comunicaciones",
+                "COD_C": "IFC_C_001_4B",
+                "DEN_C": "Desarrollo de aplicaciones web básicas",
+                "NIVEL": "1",
+                "COD_ECP": "ECP_005",
+                "DEN_ECP": "Implementar funcionalidades básicas con JavaScript"
+            },
+            {
+                "FAM_PROF": "Informática y Comunicaciones",
+                "COD_C": "IFC_C_002_4B",
+                "DEN_C": "Administración de sistemas informáticos avanzados",
+                "NIVEL": "3",
+                "COD_ECP": "ECP_006",
+                "DEN_ECP": "Configurar y mantener servidores de red"
+            },
+            {
+                "FAM_PROF": "Hostelería y Turismo",
+                "COD_C": "HOT_C_001_4B",
+                "DEN_C": "Servicios básicos de restauración",
+                "NIVEL": "1",
+                "COD_ECP": "ECP_007",
+                "DEN_ECP": "Atender clientes en servicios de restauración"
+            }
+        ];
+
+        let familiaSeleccionada = '';
+        let nivelSeleccionado = '';
+
+        // Función para cargar el CSV
+        function cargarCSV() {
+            fetch('GRADOS_C_ECP.csv')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar el archivo CSV');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    // Procesar el CSV
+                    const lines = text.split('\n');
+                    if (lines.length <= 1) {
+                        throw new Error('El archivo CSV está vacío o no tiene datos');
+                    }
+                    
+                    // Limpiar y procesar la primera línea (headers)
+                    const headers = lines[0].split(';').map(header => header.trim().replace(/"/g, ''));
+                    console.log('Headers encontrados:', headers);
+                    
+                    datos = []; // Limpiar datos anteriores
+                    
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue; // Salta líneas vacías
+                        
+                        // Dividir por punto y coma, pero respetando los punto y coma dentro de comillas
+                        const valores = parseCSVLine(line);
+                        
+                        if (valores.length !== headers.length) {
+                            console.warn(`Línea ${i + 1} tiene ${valores.length} columnas, esperadas ${headers.length}`);
+                            continue;
+                        }
+                        
+                        const obj = {};
+                        for (let j = 0; j < headers.length; j++) {
+                            obj[headers[j]] = valores[j].trim().replace(/"/g, '');
+                        }
+                        datos.push(obj);
+                    }
+                    
+                    console.log(`Cargados ${datos.length} registros del CSV`);
+                    
+                    if (datos.length === 0) {
+                        throw new Error('No se encontraron datos válidos en el CSV');
+                    }
+                    
+                    // Una vez cargados los datos, inicializar la interfaz
+                    cargarFamilias();
+                })
+                .catch(error => {
+                    console.error('Error al cargar el CSV:', error);
+                    // Mostrar mensaje de error al usuario
+                    document.getElementById('resultados-container').innerHTML = `
+                        <div class="no-data">
+                            <strong>Error al cargar los datos:</strong><br>
+                            ${error.message}<br><br>
+                            Verifique que el archivo 'GRADOS_C_ECP.csv' esté en la misma carpeta que este archivo HTML.
+                        </div>`;
+                    
+                    // Cargar datos de ejemplo como fallback
+                    console.log('Cargando datos de ejemplo...');
+                    cargarDatosEjemplo();
+                });
+        }
+        
+        // Función para parsear una línea CSV usando punto y coma como separador
+        function parseCSVLine(line) {
+            // Dividir directamente por punto y coma ya que es nuestro separador
+            // Las comas internas no deberían afectar
+            const campos = line.split(';');
+            
+            // Limpiar cada campo de posibles comillas y espacios extra
+            return campos.map(campo => campo.trim().replace(/^"|"$/g, ''));
+        }
+        
+        // Carga datos de ejemplo en caso de error con el CSV
+        function cargarDatosEjemplo() {
+            datos = [
+                {
+                    "FAM_PROF": "Administración y Gestión",
+                    "COD_C": "ADG_C_002_4B",
+                    "DEN_C": "Actividades de apoyo administrativo en el ámbito contable, financiero y fiscal",
+                    "NIVEL": "2",
+                    "COD_ECP": "ECP_001",
+                    "DEN_ECP": "Realizar operaciones básicas de contabilidad financiera"
+                },
+                {
+                    "FAM_PROF": "Administración y Gestión",
+                    "COD_C": "ADG_C_002_4B",
+                    "DEN_C": "Actividades de apoyo administrativo en el ámbito contable, financiero y fiscal",
+                    "NIVEL": "2",
+                    "COD_ECP": "ECP_002",
+                    "DEN_ECP": "Gestionar documentación administrativa y fiscal básica"
+                },
+                {
+                    "FAM_PROF": "Administración y Gestión",
+                    "COD_C": "ADG_C_003_4B",
+                    "DEN_C": "Gestión administrativa de recursos humanos",
+                    "NIVEL": "2",
+                    "COD_ECP": "ECP_003",
+                    "DEN_ECP": "Realizar trámites administrativos de personal"
+                },
+                {
+                    "FAM_PROF": "Informática y Comunicaciones",
+                    "COD_C": "IFC_C_001_4B",
+                    "DEN_C": "Desarrollo de aplicaciones web básicas",
+                    "NIVEL": "1",
+                    "COD_ECP": "ECP_004",
+                    "DEN_ECP": "Crear páginas web estáticas con HTML y CSS"
+                },
+                {
+                    "FAM_PROF": "Informática y Comunicaciones",
+                    "COD_C": "IFC_C_001_4B",
+                    "DEN_C": "Desarrollo de aplicaciones web básicas",
+                    "NIVEL": "1",
+                    "COD_ECP": "ECP_005",
+                    "DEN_ECP": "Implementar funcionalidades básicas con JavaScript"
+                },
+                {
+                    "FAM_PROF": "Informática y Comunicaciones",
+                    "COD_C": "IFC_C_002_4B",
+                    "DEN_C": "Administración de sistemas informáticos avanzados",
+                    "NIVEL": "3",
+                    "COD_ECP": "ECP_006",
+                    "DEN_ECP": "Configurar y mantener servidores de red"
+                },
+                {
+                    "FAM_PROF": "Hostelería y Turismo",
+                    "COD_C": "HOT_C_001_4B",
+                    "DEN_C": "Servicios básicos de restauración",
+                    "NIVEL": "1",
+                    "COD_ECP": "ECP_007",
+                    "DEN_ECP": "Atender clientes en servicios de restauración"
+                }
+            ];
+            
+            cargarFamilias();
+        }
+
+        // Función para extraer familias únicas
+        function cargarFamilias() {
+            const selectFamilia = document.getElementById('familia-select');
+            const familias = [...new Set(datos.map(item => item.FAM_PROF))].sort();
+            
+            selectFamilia.innerHTML = '<option value="">-- Seleccione una familia profesional --</option>';
+            
+            familias.forEach(familia => {
+                const option = document.createElement('option');
+                option.value = familia;
+                option.textContent = familia;
+                selectFamilia.appendChild(option);
+            });
+        }
+
+        // Función para agrupar datos por grado C
+        function agruparPorGrado(datosFilrados) {
+            const grupos = {};
+            
+            datosFilrados.forEach(item => {
+                const key = item.COD_C;
+                if (!grupos[key]) {
+                    grupos[key] = {
+                        codigo: item.COD_C,
+                        nombre: item.DEN_C,
+                        familia: item.FAM_PROF,
+                        nivel: item.NIVEL,
+                        ecps: []
+                    };
+                }
+                
+                // Evitar duplicados de ECP
+                if (!grupos[key].ecps.find(ecp => ecp.codigo === item.COD_ECP)) {
+                    grupos[key].ecps.push({
+                        codigo: item.COD_ECP,
+                        denominacion: item.DEN_ECP
+                    });
+                }
+            });
+            
+            return Object.values(grupos);
+        }
+
+        // Función para mostrar resultados
+        function mostrarResultados() {
+            const container = document.getElementById('resultados-container');
+            const contador = document.getElementById('contador');
+            
+            if (!familiaSeleccionada || !nivelSeleccionado) {
+                container.innerHTML = '<div class="no-data">Seleccione una familia profesional y un nivel para ver los grados C y sus estándares de competencia</div>';
+                contador.style.display = 'none';
+                return;
+            }
+
+            // Filtrar datos
+            const datosFilrados = datos.filter(item => 
+                item.FAM_PROF === familiaSeleccionada && 
+                item.NIVEL === nivelSeleccionado
+            );
+
+            if (datosFilrados.length === 0) {
+                container.innerHTML = '<div class="no-data">No se encontraron grados C para la familia profesional y nivel seleccionados</div>';
+                contador.style.display = 'none';
+                return;
+            }
+
+            // Agrupar por grado C
+            const gradosAgrupados = agruparPorGrado(datosFilrados);
+            
+            // Mostrar contador
+            const totalGrados = gradosAgrupados.length;
+            const totalECPs = datosFilrados.length;
+            contador.innerHTML = `Se encontraron ${totalGrados} grado${totalGrados !== 1 ? 's' : ''} C con ${totalECPs} estándar${totalECPs !== 1 ? 'es' : ''} de competencia`;
+            contador.style.display = 'block';
+
+            // Generar HTML
+            let html = '';
+            gradosAgrupados.forEach(grado => {
+                html += `
+                    <div class="grado-card">
+                        <div class="grado-header">
+                            <div class="grado-codigo">${grado.codigo}</div>
+                            <div class="grado-nombre">${grado.nombre}</div>
+                            <div class="grado-familia">Familia: ${grado.familia} | Nivel: ${grado.nivel}</div>
+                        </div>
+                        <div class="ecp-lista">
+                `;
+                
+                grado.ecps.forEach(ecp => {
+                    html += `
+                        <div class="ecp-item">
+                            <div class="ecp-codigo">${ecp.codigo}</div>
+                            <div class="ecp-denominacion">${ecp.denominacion}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Eventos
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarCSV();
+            
+            // Selector de familia
+            document.getElementById('familia-select').addEventListener('change', (e) => {
+                familiaSeleccionada = e.target.value;
+                mostrarResultados();
+            });
+            
+            // Botones de nivel
+            document.querySelectorAll('.nivel-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Remover clase active de todos los botones
+                    document.querySelectorAll('.nivel-btn').forEach(b => b.classList.remove('active'));
+                    
+                    // Agregar clase active al botón clickeado
+                    e.target.classList.add('active');
+                    
+                    nivelSeleccionado = e.target.dataset.nivel;
+                    mostrarResultados();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
